@@ -2,8 +2,10 @@ public class QuantityMeasurementApp {
 
     // -------- Enum for Units --------
     enum LengthUnit {
-        FEET(1.0),          // base unit
-        INCHES(1.0 / 12.0); // 1 inch = 1/12 feet
+        FEET(1.0),              // base unit = feet
+        INCHES(1.0 / 12.0),     // 1 inch = 1/12 feet
+        YARDS(3.0),             // 1 yard = 3 feet
+        CENTIMETERS(0.393701 / 12.0); // 1 cm = 0.393701 inches → convert to feet
 
         private final double conversionFactor;
 
@@ -32,69 +34,68 @@ public class QuantityMeasurementApp {
             return value * unit.getConversionFactor();
         }
 
-        // Override equals()
         @Override
         public boolean equals(Object obj) {
 
-            // 1. Same reference
             if (this == obj) return true;
-
-            // 2. Null or type check
             if (obj == null || getClass() != obj.getClass()) return false;
 
             Length other = (Length) obj;
 
-            // 3. Compare after converting to base unit
             return Double.compare(this.toBaseUnit(), other.toBaseUnit()) == 0;
         }
     }
 
     // -------- Demo Methods --------
 
-    // Feet equality
-    public static void demonstrateFeetEquality() {
-        Length l1 = new Length(1.0, LengthUnit.FEET);
-        Length l2 = new Length(1.0, LengthUnit.FEET);
+    public static void testYardToFeet() {
+        Length y = new Length(1.0, LengthUnit.YARDS);
+        Length f = new Length(3.0, LengthUnit.FEET);
 
-        System.out.println("Input: Quantity(1.0, feet) and Quantity(1.0, feet)");
-        System.out.println("Output: " + (l1.equals(l2) ? "Equal (true)" : "Not Equal (false)"));
+        System.out.println("1 yard == 3 feet → " + y.equals(f));
     }
 
-    // Inches equality
-    public static void demonstrateInchesEquality() {
-        Length l1 = new Length(1.0, LengthUnit.INCHES);
-        Length l2 = new Length(1.0, LengthUnit.INCHES);
+    public static void testYardToInches() {
+        Length y = new Length(1.0, LengthUnit.YARDS);
+        Length i = new Length(36.0, LengthUnit.INCHES);
 
-        System.out.println("Input: Quantity(1.0, inch) and Quantity(1.0, inch)");
-        System.out.println("Output: " + (l1.equals(l2) ? "Equal (true)" : "Not Equal (false)"));
+        System.out.println("1 yard == 36 inches → " + y.equals(i));
     }
 
-    // Cross-unit comparison
-    public static void demonstrateCrossComparison() {
-        Length l1 = new Length(1.0, LengthUnit.FEET);
-        Length l2 = new Length(12.0, LengthUnit.INCHES);
+    public static void testCmToInches() {
+        Length cm = new Length(1.0, LengthUnit.CENTIMETERS);
+        Length inch = new Length(0.393701, LengthUnit.INCHES);
 
-        System.out.println("Input: Quantity(1.0, feet) and Quantity(12.0, inches)");
-        System.out.println("Output: " + (l1.equals(l2) ? "Equal (true)" : "Not Equal (false)"));
+        System.out.println("1 cm == 0.393701 inch → " + cm.equals(inch));
+    }
+
+    public static void testSameUnit() {
+        Length a = new Length(2.0, LengthUnit.YARDS);
+        Length b = new Length(2.0, LengthUnit.YARDS);
+
+        System.out.println("2 yards == 2 yards → " + a.equals(b));
     }
 
     // -------- Main Method --------
     public static void main(String[] args) {
 
-        demonstrateFeetEquality();
-        demonstrateInchesEquality();
-        demonstrateCrossComparison();
+        testYardToFeet();
+        testYardToInches();
+        testCmToInches();
+        testSameUnit();
 
         // Extra Tests
         System.out.println("\n--- Extra Tests ---");
 
-        Length a = new Length(1.0, LengthUnit.FEET);
+        Length a = new Length(1.0, LengthUnit.YARDS);
         Length b = new Length(2.0, LengthUnit.FEET);
-        Length c = new Length(12.0, LengthUnit.INCHES);
 
-        System.out.println("Different Feet: " + a.equals(b)); // false
-        System.out.println("Feet vs Inches: " + a.equals(c)); // true
-        System.out.println("Null Check: " + a.equals(null));  // false
-        System.out.println("Same Ref: " + a.equals(a));       // true
+        System.out.println("1 yard == 2 feet → " + a.equals(b)); // false
+        System.out.println("Null check → " + a.equals(null));    // false
+        System.out.println("Same ref → " + a.equals(a));         // true
+
+        // Transitive check
+        Length c = new Length(36.0, LengthUnit.INCHES);
+        System.out.println("Transitive (yard == inch) → " + a.equals(c)); // true
     }
 }
